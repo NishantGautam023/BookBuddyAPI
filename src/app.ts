@@ -14,6 +14,7 @@ app.get('/', (req, res, next) => {
     })
 } )
 
+app.use(express.json()) // use the Middleware for JSON Parsing
 app.use("/api/users",userRouter)
 
 
