@@ -1,7 +1,6 @@
-import express, { NextFunction, Request, Response } from "express";
-import createHttpError, { HttpError } from "http-errors";
-import { config } from "./config/config";
+import express from "express";
 import globalErrorHandler from "./middlewares/globalErrorHandler";
+import userRouter from "./user/userRouter";
 
 const app = express()
 
@@ -14,6 +13,10 @@ app.get('/', (req, res, next) => {
         message: "Welcome to the Ebook API"
     })
 } )
+
+app.use("/api/users",userRouter)
+
+
 
 // Global Error Handlers
 app.use(globalErrorHandler)
