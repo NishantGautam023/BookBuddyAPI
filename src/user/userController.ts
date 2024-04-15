@@ -55,7 +55,7 @@ const  createUser = async (req : Request, res: Response, next: NextFunction) => 
       algorithm: 'HS256'
     })
     // Response
-    res.json({
+    res.status(201).json({
       accessToken: token
     })
 
@@ -65,9 +65,13 @@ const  createUser = async (req : Request, res: Response, next: NextFunction) => 
 
 }
 
+const loginUser = async (req: Request, res: Response, next:NextFunction ) => {
+  res.json({
+    message: "OK"
+  })
+}
 
 
 
 
-
-export {createUser}
+export {createUser, loginUser}

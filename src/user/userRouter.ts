@@ -2,11 +2,11 @@ import express from "express";
 
 const userRouter = express.Router()
 
-import {createUser} from "./userController";
+import {createUser, loginUser} from "./userController";
 
 userRouter.post('/register',createUser)
 
-
+userRouter.post('/login', loginUser)
 
 
 
