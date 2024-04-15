@@ -35,9 +35,9 @@ const  createUser = async (req : Request, res: Response, next: NextFunction) => 
   // Password --> Hash
   const hashedPassword = await bcrypt.hash(password, 10)
 
-  let newUser: User;
+let newUser: User;
   try {
-    newUser = await userModel.create({
+  newUser = await userModel.create({
       name,
       email,
       password: hashedPassword
@@ -66,9 +66,47 @@ const  createUser = async (req : Request, res: Response, next: NextFunction) => 
 }
 
 const loginUser = async (req: Request, res: Response, next:NextFunction ) => {
-  res.json({
-    message: "OK"
-  })
+
+  const {email, password} = req.body
+
+  if(!email || !password) {
+    return next(createHttpError(400, "All fields are required!!"))
+  }
+
+
+  // Check if user exits in the database
+
+  let existingUser: User | null
+  try {
+   existingUser  = await  userModel.findOne({email})
+
+    if(!existingUser) {
+      return next(createHttpError(404, "User not found."))
+    }
+
+  } catch (err) {
+    return next(createHttpError(500, "Error while fetching the user"))
+  }
+
+  // Check if the email and password matches
+    try {
+      const isMatch = await bcrypt.compare(password, existingUser.password)
+      if(!isMatch) {
+        return next(createHttpError(400, "Invalid login credentials." ))
+      }
+      // If matches create a new AccessToken
+    const token = sign({sub:existingUser._id }, config.jwtSecret as string, {
+      expiresIn: "7d",
+      algorithm: "HS256"
+    } )
+
+      res.status(200).json({accessToken: token})
+
+
+    } catch (err) {
+      return next(createHttpError(500, "Server error while verifying credentials."))
+    }
+
 }
 
 
