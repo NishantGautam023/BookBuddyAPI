@@ -2,8 +2,14 @@ import { Request, Response, NextFunction } from "express";
 import cloudinary from "../config/cloudinary";
 import path from "node:path";
 import createHttpError from "http-errors";
+import bookModel from "./bookModel";
+import * as fs from "fs";
 
 const createBook = async (req: Request, res: Response, next: NextFunction) => {
+
+  const {title, genre} = req.body
+
+
   console.log("files", req.files);
 
   const files = req.files as { [filename: string]: Express.Multer.File[] };
@@ -36,7 +42,22 @@ const createBook = async (req: Request, res: Response, next: NextFunction) => {
     });
 
     console.log('Upload Results:', coverImageUploadResult, bookFileUploadResult);
-    res.json({
+
+    const newBook = await bookModel.create({
+      title,
+      genre,
+      author: '661c78673af9f43e5fc9a303',
+      coverImage: coverImageUploadResult.secure_url,
+      file: bookFileUploadResult.secure_url
+    })
+
+    // Delete temp files
+  await  fs.promises.unlink(coverImageFilePath);
+    await  fs.promises.unlink(bookFilePath);
+
+
+    res.status(201).json({
+      id: newBook._id,
       message: "Book created",
       coverImageUrl: coverImageUploadResult.secure_url,
       bookFileUrl: bookFileUploadResult.secure_url
