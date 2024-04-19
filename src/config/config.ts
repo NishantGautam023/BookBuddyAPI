@@ -9,7 +9,9 @@ const _config = {
     jwtSecret: process.env.JWT_SECRET,
     Cloudinary_cloud: process.env.CLOUDINARY_CLOUD,
     Cloudinary_API_KEY: process.env.CLOUDINARY_API_KEY,
-    Cloudinary_API_SECRET: process.env.CLOUDINARY_API_SECRET
+    Cloudinary_API_SECRET: process.env.CLOUDINARY_API_SECRET,
+    frontendDomainCors: process.env.FRONTEND_DOMAIN_CORS,
+
 }
 
 
