@@ -9,7 +9,7 @@ import authenticate from "../middlewares/authenticate";
 
 const bookRouter = express.Router();
 
-// File store local -->
+
 const upload = multer({
   dest: path.resolve(__dirname,'../../public/data/uploads'), // IF NOT EXIST multer will create it.
   limits: {
@@ -18,7 +18,7 @@ const upload = multer({
 })
 
 
-// routes
+
 bookRouter.post('/',
   authenticate,
   upload.fields([

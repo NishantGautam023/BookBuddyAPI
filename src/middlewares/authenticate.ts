@@ -30,14 +30,14 @@ const authenticate = (req: Request, res: Response, next: NextFunction) => {
 
 
   try {
-    const parsedToken = token.split(' ')[1] // Get the Token
+    const parsedToken = token.split(' ')[1]
     const decoded = verify(parsedToken, config.jwtSecret as string)
     console.log('Decoded Token', decoded)
 
     const _req = req as AuthRequest
     _req.userId = decoded.sub as string
 
-    next(); // Since it is a middleware, we are giving the control to the next chain handler.
+    next();
   } catch (err: any) {
     console.error('JWT error:', err.message)
     let errorMessage = "Invalid token";

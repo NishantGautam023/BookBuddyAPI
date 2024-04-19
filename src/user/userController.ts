@@ -8,17 +8,17 @@ import { User } from "./userTypes";
 const  createUser = async (req : Request, res: Response, next: NextFunction) => {
   const { name, email, password } = req.body
 
-  // Validation
+
   if (!name || !email || !password) {
     const error = createHttpError(400, "ALl fields are required");
-    return next(error); // Global Error Handler will send the response
+    return next(error);
   }
 
 
 
   try {
-    // Database Call
-    const user = await userModel.findOne({ email: email }) // In js if key and value same we can only write key also. i.e email.
+
+    const user = await userModel.findOne({ email: email })
 
     if (user) {
       const error = createHttpError(400, 'User already exists with this email.')
@@ -32,7 +32,7 @@ const  createUser = async (req : Request, res: Response, next: NextFunction) => 
 
 
 
-  // Password --> Hash
+
   const hashedPassword = await bcrypt.hash(password, 10)
 
 let newUser: User;
@@ -49,7 +49,7 @@ let newUser: User;
 
 
   try {
-    // Token Generation JWT
+
     const token = sign({ sub: newUser._id }, config.jwtSecret as string, {
       expiresIn: "7d",
       algorithm: 'HS256'
@@ -74,7 +74,7 @@ const loginUser = async (req: Request, res: Response, next:NextFunction ) => {
   }
 
 
-  // Check if user exits in the database
+
 
   let existingUser: User | null
   try {
@@ -88,13 +88,13 @@ const loginUser = async (req: Request, res: Response, next:NextFunction ) => {
     return next(createHttpError(500, "Error while fetching the user"))
   }
 
-  // Check if the email and password matches
+
     try {
       const isMatch = await bcrypt.compare(password, existingUser.password)
       if(!isMatch) {
         return next(createHttpError(400, "Invalid login credentials." ))
       }
-      // If matches create a new AccessToken
+
     const token = sign({sub:existingUser._id }, config.jwtSecret as string, {
       expiresIn: "7d",
       algorithm: "HS256"
