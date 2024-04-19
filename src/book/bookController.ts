@@ -5,6 +5,7 @@ import createHttpError from "http-errors";
 import bookModel from "./bookModel";
 import * as fs from "fs";
 import { AuthRequest } from "../middlewares/authenticate";
+import bookRouter from "./bookRouter";
 
 const createBook = async (req: Request, res: Response, next: NextFunction) => {
 
@@ -84,6 +85,7 @@ const updateBook = async (req: Request, res: Response, next: NextFunction)=> {
 
     const _req = req as AuthRequest // // Cast the request to 'AuthRequest' to use the custom 'userId' property for authorization
 
+    // check Access
     if (book.author.toString() !== _req.userId) {
       return next(createHttpError(403, "You cannot update other's book"))
     }
@@ -133,7 +135,7 @@ const updateBook = async (req: Request, res: Response, next: NextFunction)=> {
       const uploadResultPdf = await cloudinary.uploader.upload(bookFilePath, {
         resource_type: "raw",
         filename_override: completeFileName,
-        folder: "book-covers",
+        folder: "book-pdfs",
         format: "pdf",
       })
 
@@ -200,4 +202,50 @@ const getSingleBook = async (req: Request, res: Response, next: NextFunction) =>
 }
 
 
-  export { createBook, updateBook, listBooks, getSingleBook };
+const deleteBook = async (req: Request, res: Response, next: NextFunction) => {
+
+    try {
+      const bookId = req.params.bookId;
+      const book = await  bookModel.findOne({_id: bookId})
+
+      if(!book) {
+        return next(createHttpError(404, "Book not found"))
+      }
+
+      // Check if the user has access to delete the Book
+      const _req = req as AuthRequest
+      if (book.author.toString() !== _req.userId) {
+        return next(createHttpError(403, "You cannot update other's book"))
+      }
+
+
+      const coverFileSplits = book.coverImage.split('/');
+      const coverImagePublicId = coverFileSplits.at(-2) + '/'  + (coverFileSplits.at(-1)?.split('.').at(-2))
+
+      const bookFileSplits = book.file.split('/');
+      const bookFilePublicId = bookFileSplits.at(-2) + "/" +  bookFileSplits.at(-1);
+
+
+      await cloudinary.uploader.destroy(coverImagePublicId); // Delete cover
+      await cloudinary.uploader.destroy(bookFilePublicId, {
+        resource_type: "raw" // For pdf option only
+      })
+      await  bookModel.deleteOne({_id: bookId}) // Deletes the record from the database
+
+      return res.sendStatus(204) // When deleting only send code status no Data.
+    } catch (error) {
+      return next(createHttpError(500, "Error in Deleting Book"))
+    }
+
+
+
+
+
+
+
+
+
+
+}
+
+  export { createBook, updateBook, listBooks, getSingleBook, deleteBook };
