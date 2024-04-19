@@ -108,6 +108,7 @@ const updateBook = async (req: Request, res: Response, next: NextFunction)=> {
         const uploadResult = await cloudinary.uploader.upload(filePath, {
           filename_override: completeCoverImage,
           folder: "book-covers",
+          format: coverMimeType,
         });
 
         completeCoverImage = uploadResult.secure_url;
@@ -132,7 +133,8 @@ const updateBook = async (req: Request, res: Response, next: NextFunction)=> {
       const uploadResultPdf = await cloudinary.uploader.upload(bookFilePath, {
         resource_type: "raw",
         filename_override: completeFileName,
-        folder: "book-covers"
+        folder: "book-covers",
+        format: "pdf",
       })
 
       completeFileName = uploadResultPdf.secure_url
@@ -169,4 +171,17 @@ const updateBook = async (req: Request, res: Response, next: NextFunction)=> {
 
 }
 
-  export { createBook, updateBook };
+
+const listBooks = async  (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const book = await bookModel.find();
+        res.json(book)
+    } catch (error) {
+      return next(createHttpError(500, "Error while getting a book"))
+    }
+
+
+  res.json("List of all Books are Here")
+}
+
+  export { createBook, updateBook, listBooks };
