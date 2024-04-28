@@ -1,6 +1,10 @@
 import  mongoose from "mongoose";
 import {config} from "./config";
 
+
+const dbName = config.databaseName || "bookDatabase";
+const collectionName = config.collectionName || "bookCollection";
+
 const connectDatabase = async () => {
 
 
@@ -15,7 +19,9 @@ const connectDatabase = async () => {
     })
 
 
-    await mongoose.connect(config.databaseUrl as string)
+    await mongoose.connect(config.databaseUrl as string, {
+      dbName: dbName,
+    })
 
 
   } catch (err) {
