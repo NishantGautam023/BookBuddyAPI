@@ -10,7 +10,7 @@ const bookSchema = new mongoose.Schema<Book>({
     type: mongoose.Schema.Types.ObjectId, // This is how we connect two collections
     required: true,
     // ADD REF
-    ref: "user",
+    ref: "User",
 
   },
   description: {
