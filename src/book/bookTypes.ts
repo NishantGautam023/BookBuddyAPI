@@ -10,4 +10,5 @@ export interface Book {
   createdAt: Date;
   updatedAt: Date;
   publicationDate: Date;
+  description: string;
 }

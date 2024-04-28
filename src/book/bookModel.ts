@@ -9,6 +9,13 @@ const bookSchema = new mongoose.Schema<Book>({
   author: {
     type: mongoose.Schema.Types.ObjectId, // This is how we connect two collections
     required: true,
+    // ADD REF
+    ref: "user",
+
+  },
+  description: {
+    type: String,
+    required: true
   },
   coverImage : {
     type: String,
