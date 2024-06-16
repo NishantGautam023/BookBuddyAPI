@@ -8,7 +8,7 @@ import { config } from "./config/config";
 const app = express()
 
 app.use(cors({
-    origin: config.frontendDomainCors,
+    origin: config.frontendDomain,
 }))
 app.use(express.json()) // use the Middleware for JSON Parsing
 
