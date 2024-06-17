@@ -1,0 +1,26 @@
+services:
+  mongoServer:
+    image: mongo
+    container_name: mongodb-server
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=toor@!8848
+    volumes:
+      - ~/mongo/data:/data/db
+    networks:
+      - bookbuddy-network
+
+  backendapi:
+    image: nishu01/bookbuddy-backend:v1.1
+    container_name: bookbuddy-backend
+    ports:
+      - '5513:5513'
+    networks:
+      - bookbuddy-network
+    env_file: .env
+    depends_on:
+      - mongoServer
+
+networks:
+  bookbuddy-network:
+    driver: bridge
