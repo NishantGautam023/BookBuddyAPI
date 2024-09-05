@@ -7,11 +7,10 @@ import { config } from "../config/config";
 import { User } from "./userTypes";
 import { PostHog } from "posthog-node";
 
-
-const client = new PostHog(config.postHog, {
-  host: 'https://us.i.posthog.com' 
-});
-
+const client = new PostHog(
+  config.postHog as string,
+  {host:'https://us.i.posthog.com' }
+);
 
 
 const  createUser = async (req : Request, res: Response, next: NextFunction) => {
