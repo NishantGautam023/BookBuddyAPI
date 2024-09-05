@@ -13,6 +13,7 @@ const _config = {
     frontendDomain: process.env.FRONTEND_DOMAIN,
     databaseName: process.env.DB_NAME,
     collectionName:process.env.COLLECTION_NAME,
+    postHog: process.env.POSTHOG_ANALYTICS,
 
 }
 

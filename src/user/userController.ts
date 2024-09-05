@@ -5,6 +5,14 @@ import bcrypt from "bcrypt"
 import { sign } from "jsonwebtoken";
 import { config } from "../config/config";
 import { User } from "./userTypes";
+import { PostHog } from "posthog-node";
+
+
+const client = new PostHog(config.postHog)
+
+
+
+
 const  createUser = async (req : Request, res: Response, next: NextFunction) => {
   const { name, email, password } = req.body
 
@@ -46,6 +54,16 @@ let newUser: User;
     return next(createHttpError(500, "Error while creating user "))
   }
 
+  // Capture user creation event using MongoDB's _id as the distinct_id
+  try {
+    await client.capture({
+      event: 'user_created',
+      distinctId: newUser._id.toString(),
+      properties: { email }
+    });
+  } catch (err) {
+    console.error("Error capturing event in PostHog:", err);
+  }
 
 
   try {
@@ -94,6 +112,17 @@ const loginUser = async (req: Request, res: Response, next:NextFunction ) => {
       if(!isMatch) {
         return next(createHttpError(400, "Invalid login credentials." ))
       }
+
+
+        // Capture login event using MongoDB's _id as the distinct_id
+    try {
+      await client.capture({
+        event: 'login',
+        distinctId: existingUser._id.toString(),
+      });
+    } catch (err) {
+      console.error("Error capturing event in PostHog:", err);
+    }
 
     const token = sign({sub:existingUser._id }, config.jwtSecret as string, {
       expiresIn: "7d",
