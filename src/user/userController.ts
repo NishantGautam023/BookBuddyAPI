@@ -8,8 +8,9 @@ import { User } from "./userTypes";
 import { PostHog } from "posthog-node";
 
 
-const client = new PostHog(config.postHog)
-
+const client = new PostHog(config.postHog, {
+  host: 'https://us.i.posthog.com' 
+});
 
 
 
